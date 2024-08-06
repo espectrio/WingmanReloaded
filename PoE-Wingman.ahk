@@ -1,4 +1,4 @@
-Global VersionNumber := .15.28
+Global VersionNumber := .15.32
 #Include, %A_ScriptDir%\lib\Header.ahk
 #Include, %A_ScriptDir%\lib\RunAdmin.ahk
 #Include, %A_ScriptDir%\lib\FileCheck.ahk
@@ -25,6 +25,10 @@ Tooltip,
 #Include, %A_ScriptDir%\lib\gui\IngameOverlay.ahk
 If (ShowOnStart)
   MainMenu()
+If (YesChaosOverlay){
+  RefreshChaosRecipe()
+}
+
 #Include, %A_ScriptDir%\lib\Timers.ahk
 #Include *i %A_ScriptDir%\save\MyCustomAutoRun.ahk
 ; Hotkeys to reload or exit script - Hardcoded Hotkeys

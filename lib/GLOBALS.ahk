@@ -47,19 +47,26 @@ Global apiList := ["Currency"
 	, "Resonator"
 	, "Essence"
 	, "DivinationCard"
-	, "Prophecy"
 	, "SkillGem"
 	, "BaseType"
 	, "HelmetEnchant"
 	, "UniqueMap"
 	, "Map"
+	, "BlightedMap"
+	, "BlightRavagedMap"
 	, "UniqueJewel"
 	, "UniqueFlask"
 	, "UniqueWeapon"
 	, "UniqueArmour"
 	, "UniqueAccessory"
 	, "Beast"
-	, "Vial"]
+	, "Vial"
+	, "Omen"
+	, "ClusterJewel"
+	, "Invitation"
+	, "Memory"
+	, "KalguuranRune"
+	, "Tattoo"]
 ; Create Executable group for gameHotkey, IfWinActive
 Global POEGameArr := ["PathOfExile.exe", "PathOfExile_x64.exe", "PathOfExileSteam.exe", "PathOfExile_x64Steam.exe", "PathOfExile_KG.exe", "PathOfExile_x64_KG.exe", "PathOfExile_x64EGS.exe", "PathOfExileEGS.exe"]
 for n, exe in POEGameArr
@@ -87,7 +94,7 @@ Global StackSizes := {"Wisdom":40,"Portal":40,"Scouring":30,"Perandus":5000
 	,"Alteration":20,"Transmutation":40,"Augment":30,"Chance":20
 	,"Alchemy":20,"Binding":20,"Vaal":20,"Chisel":20
 	,"Harbinger":20,"Horizon":20,"Chaos":20,"Engineer":20,"Regal":10
-	,"Simple":10,"Prime":10,"Awakened":10,"Exalted":10,"Veiled":10}
+	,"Simple":10,"Prime":10,"Exalted":10,"Veiled":10}
 Global MainAttackPressedActive,MainAttackLastRelease,SecondaryAttackPressedActive
 Global ColorPicker_Group_Color, ColorPicker_Group_Color_Hex
 	, ColorPicker_Red, ColorPicker_Red_Edit, ColorPicker_Red_Edit_Hex
@@ -180,6 +187,7 @@ ft_ToolTip_Text_Part1=
 	YesDiv = This option is for the Divination Trade logic`rEnable to sell stacks of divination cards at the trade panel
 	YesMapUnid = This option is for the Identify logic`rEnable to avoid identifying maps
 	YesInfluencedUnid = This option is for the Identify logic`rEnable to avoid identifying influenced rares
+	YesSynthesisId = This option is for the Identify logic`rEnable to Always identify synthesis magic and rare items
 	YesCLFIgnoreImplicit = This option disable implicits being merged with Pseudos.`rEx: This will ignore implicits in base like two-stone boots (elemental resists)`ror two-stone rings (elemental resists) or wand (spell damage)
 	YesSortFirst = This option is for the Stash logic`rEnable to send items to stash after all have been scanned
 	YesSkipMaps = Select the inventory column which you will begin skipping rolled maps`rDisable by setting to 0
@@ -277,6 +285,8 @@ ft_ToolTip_Text_Part2=
 	StashTabUniqueRing = Assign the Stash tab for Unique Ring items`rIf Collection is enabled, this will be where overflow rings go
 	StashTabYesUniqueRing = Enable to send Unique Ring items to the assigned tab on the left`rIf Collection is enabled, this will be where overflow rings go
 	StashTabYesInfluencedItem = Enable to send Influenced items to the assigned tab on the left
+	StashTabYesRunes = Enable to send Kalguuran Runes to the assigned tab on the left
+	StashTabYesTattoos = Enable to send Tattoos to the assigned tab on the left
 	StashTabInfluencedItem = Assign the Stash tab for Influenced items
 	StashTabDelve = Assign the Stash tab for Delve items
 	StashTabYesDelve = Enable to send Delve items to the assigned tab on the left
@@ -521,6 +531,7 @@ Global YesIdentify := 1
 Global YesDiv := 1
 Global YesMapUnid := 1
 Global YesInfluencedUnid := 1
+Global YesSynthesisId := 1
 Global YesCLFIgnoreImplicit := 0
 Global YesStashKeys := 1
 Global OnHideout := False
@@ -662,6 +673,10 @@ Global StashTabBrickedMaps := 1
 Global StashTabYesBrickedMaps := 1
 Global StashTabInfluencedItem := 1
 Global StashTabYesInfluencedItem := 1
+Global StashTabRunes := 1
+Global StashTabYesRunes := 1
+Global StashTabTattoos := 1
+Global StashTabYesTattoos := 1
 Global StashTabCrafting := 1
 Global StashTabYesCrafting := 1
 Global StashTabVeiled := 1
@@ -887,3 +902,13 @@ Global ForceMatch6Link := False
 Global ForceMatchGem20 := False
 ; Ingame Overlay Transparency
 Global YesInGameOverlay := 0
+; Chaos Recipe Overlay
+Global YesChaosOverlay := 0
+Global GuiChaosCountChest := "-"
+Global GuiChaosCountHelmet := "-"
+Global GuiChaosCountBoot := "-"
+Global GuiChaosCountGlove := "-"
+Global GuiChaosCountBelt := "-"
+Global GuiChaosCountWeapons := "-"
+Global GuiChaosCountRings := "-"
+Global GuiChaosCountAmulet := "-"

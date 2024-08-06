@@ -70,6 +70,7 @@ UpdateExtra:
 	IniWrite, %YesDiv%, %A_ScriptDir%\save\Settings.ini, General, YesDiv
 	IniWrite, %YesMapUnid%, %A_ScriptDir%\save\Settings.ini, General, YesMapUnid
 	IniWrite, %YesInfluencedUnid%, %A_ScriptDir%\save\Settings.ini, General, YesInfluencedUnid
+	IniWrite, %YesSynthesisId%, %A_ScriptDir%\save\Settings.ini, General, YesSynthesisId
 	IniWrite, %YesSortFirst%, %A_ScriptDir%\save\Settings.ini, General, YesSortFirst
 	IniWrite, %Latency%, %A_ScriptDir%\save\Settings.ini, General, Latency
 	IniWrite, %ClickLatency%, %A_ScriptDir%\save\Settings.ini, General, ClickLatency
@@ -240,6 +241,12 @@ ShowHideOverlay() {
   GuiControl,2: Show%YesInGameOverlay%, overlayT2
   GuiControl,2: Show%YesInGameOverlay%, overlayT3
   GuiControl,2: Show%YesInGameOverlay%, overlayT4
+
+  If (YesChaosOverlay) {
+    Gui Chaos: Show, NA
+  } Else {
+    Gui Chaos: Show, Hide
+  }
   Return
 }
 
@@ -435,4 +442,3 @@ MouseTip(x:="", y:="", w:=21, h:=21)
   }
   Gui, _MouseTip_: Destroy
 }
-

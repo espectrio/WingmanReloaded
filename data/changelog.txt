@@ -1,3 +1,44 @@
+## Version .15.32 - Alpha Version - August/05/2024
+Bug Fixes
+  * Fixed ninja pricing for several categories
+  * Improved map crafting logic
+New Functionality
+  * Option to always identify sythesis rare/magic items
+  * Allow corrupted maps to identify
+  * New item parser logic for Cluster jewels
+  * New item parser logic for Runes
+  * New item parser logic for Omen
+  * New item parser logic for Fractured Actual Tier
+
+---
+
+## Version .15.31 - Alpha Version - August/02/2024
+Misc Adjustments
+  * Fallback values for bases missing from bases file
+  * Small adjustment to Ctrl Shift Click delay
+Chaos Recipe Improvements
+  * Gui overlay now shows/hides properly with the game being on top
+  * Added button to refresh Chaos Recipe data
+  * Also added it to the tray menu
+
+---
+
+## Version .15.30 - Alpha Version - July/29/2024
+Data Files
+  * Update Data File to Match RePOE
+
+---
+
+## Version .15.29 - Alpha Version - July/27/2024
+Map Crafting Improvements
+  * Chisel logic improved to match 3.25 changes
+  * Better support for unid map option.
+Chaos Recipe GUI
+  * First pass at an idea for displaying the Chaos Recipe count.
+  * Can be disabled in the configuration panel.
+
+---
+
 ## Version .15.28 - Alpha Version - April/5/2024
 General Improvements
   * Attempt to fix randomly slow mouse movements

@@ -77,6 +77,19 @@
 		If (This.Prop.Rarity_Digit == 4 && !This.Affix["Unidentified"])
 			This.ApproximatePerfection()
 		This.MatchPseudoAffix()
+		If (This.Prop.ClusterJewel) {
+			This.Prop.ClusterSkills := 0
+			This.Prop.ClusterSmall := 0
+			For k, v in This.Affix {
+				If InStr(k, "# Added Passive Skill is")
+					This.Prop.ClusterSkills += 1
+				If InStr(k, "Added Small Passive Skills also grant:")
+					This.Prop.ClusterSmall += 1
+				If (RegExMatch(k, "Added Small Passive Skills grant\: (.*) \(enchant\)", match))
+					This.Prop.ClusterKey := StrReplace(match1,"#",This.Affix[k])
+			}
+			This.Prop.ClusterVariant := This.Affix["Adds # Passive Skills (enchant)"] " passives"
+		}
 		This.MatchExtenalDB()
 		This.MatchCraftingBases()
 		This.MatchBase2Slot()
@@ -86,16 +99,6 @@
         If (This.Prop.Rarity_Digit = 3 && !This.Affix.Unidentified && (StashTabYesPredictive && YesPredictivePrice != "Off") ){
             This.Prop.PredictPrice := This.PredictPrice()
         }
-		If (This.Prop.ClusterJewel) {
-			This.Prop.ClusterSkills := 0
-			This.Prop.ClusterSmall := 0
-			For k, v in This.Affix {
-				If InStr(k, "# Added Passive Skill is")
-					This.Prop.ClusterSkills += 1
-				If InStr(k, "Added Small Passive Skills also grant:")
-					This.Prop.ClusterSmall += 1
-			}
-		}
 		If (This.Prop.HasImplicit) {
 			Static Tiers := {"Lesser":1,"Greater":2,"Grand":3,"Exceptional":4,"ReplaceWithTier5Name":5,"Perfect":6}
 			If RegExMatch(This.Data.Blocks.Implicit, "`amO)Searing Exarch Implicit Modifier \((.*?)\)", RxMatch) {
@@ -308,10 +311,33 @@
 			{
 				This.Prop.AtlasStone := True
 			}
-			If (This.Prop.ItemClass = "Misc Map Items" || This.Prop.ItemClass = "Memories" || This.Prop.ItemClass = "Vault Key")
+			Else If (This.Prop.ItemClass = "Misc Map Items"
+				|| This.Prop.ItemClass = "Memories"
+				|| This.Prop.ItemClass = "Vault Key"
+				|| (This.Prop.ItemClass = "Stackable Currency" && This.Prop.ItemBase ~= "Scouting Report"))
 			{
 				This.Prop.MiscMapItem := True
 				This.Prop.SpecialType := "Misc Map Item"
+				If (This.Prop.ItemClass = "Memories")
+					This.Prop.IsMemory := True
+			}
+			Else If (This.Prop.ItemClass = "Stackable Currency" && RegExMatch(This.Prop.ItemBase, "^(.*) Rune$", match))
+			{
+				This.Prop.IsRune := True
+				This.Prop.KalguuranRune := match1
+				This.Prop.SpecialType := "Kalguuran Rune"
+			}
+			Else If (This.Prop.ItemClass = "Stackable Currency" && RegExMatch(This.Prop.ItemBase, "^Omen of t?h?e? ?(.*)$", match))
+			{
+				This.Prop.IsOmen := True
+				This.Prop.OmenType := match1
+				This.Prop.SpecialType := "Omen"
+			}
+			Else If (This.Prop.ItemClass = "Stackable Currency" && RegExMatch(This.Prop.ItemBase, "^Tattoo of the (.*)$", match))
+			{
+				This.Prop.IsTattoo := True
+				This.Prop.TattooType := match1
+				This.Prop.SpecialType := "Tattoo"
 			}
 			Else If (This.Prop.ItemClass = "Atlas Region Upgrade Items" || This.Prop.ItemClass ~= "Atlas Upgrade Item" )
 			{
@@ -327,6 +353,11 @@
 					This.Prop.IsBlightedMap := True
 					Prop.SpecialType := "Blighted Map"
 				}
+				Else If (InStr(This.Prop.ItemBase, "Blight-ravaged"))
+				{
+					This.Prop.IsBlightRavagedMap := True
+					Prop.SpecialType := "Blight-ravaged Map"
+				}
 				Else
 				{
 					This.Prop.SpecialType := "Map"
@@ -335,6 +366,7 @@
 			Else If (This.Prop.ItemBase ~= "Invitation:" && This.Data.Blocks.FlavorText ~= "Map Device")
 			{
 				This.Prop.SpecialType := "Invitation Map"
+				This.Prop.IsInvitation := True
 			}
 			Else If (This.Prop.ItemBase ~= " Incubator$")
 			{
@@ -558,6 +590,11 @@
 				Else
 					This.Prop.Item_Width := This.Prop.Item_Height := 2
 			}
+			Else If (This.Prop.ItemClass = "Tinctures")
+			{
+				This.Prop.Item_Width := 1
+				This.Prop.Item_Height := 2
+			}
 		}
 		;End NamePlate Parser
 
@@ -575,13 +612,8 @@
 			Else
 				This.Prop.IsInfluenceItem := True
 		}
-		; Get Prophecy/Beasts using Flavour Txt
-		If (RegExMatch(This.Data.Blocks.FlavorText, "Right-click to add this prophecy to your character",RxMatch))
-		{
-			This.Prop.Prophecy := True
-			This.Prop.SpecialType := "Prophecy"
-		}
-		Else If (RegExMatch(This.Data.Blocks.FlavorText, "Right-click to add this to your bestiary",RxMatch))
+		; Get Beasts using Flavour Txt
+		If (RegExMatch(This.Data.Blocks.FlavorText, "Right-click to add this to your bestiary",RxMatch))
 		{
 			This.Prop.IsBeast := True
 			This.Prop.SpecialType := "Beast"
@@ -1013,6 +1045,7 @@
 							if(AffixWRLine[1] == This.Prop.FracturedModKey){
 								Name := "Fractured" . Name
 								This.Prop[Name] := value
+								This.Prop.FracturedActualTier := value
 							}
 							break
 						}
@@ -1702,8 +1735,32 @@
 							This.Prop.Belt := True
 						If (This.Prop.ItemClass = "Support Skill Gems")
 							This.Prop.Support := True
-						Break
+						Break 2
 					}
+				}
+			}
+			If (!This.Prop.Item_Height || !This.Prop.Item_Width) {
+				If (This.Prop.ItemClass ~= "Amulets|Rings") {
+					This.Prop.Item_Width := 1
+					This.Prop.Item_Height := 1
+				} Else If (This.Prop.ItemClass ~= "Belts") {
+					This.Prop.Item_Width := 2
+					This.Prop.Item_Height := 1
+				} Else If (This.Prop.ItemClass ~= "Thrusting") {
+					This.Prop.Item_Width := 1
+					This.Prop.Item_Height := 4
+				} Else If (This.Prop.ItemClass ~= "Body Armours|Quivers|One Hand|Sceptres") {
+					This.Prop.Item_Width := 2
+					This.Prop.Item_Height := 3
+				} Else If (This.Prop.ItemClass ~= "Boots|Gloves|Helmets|Claws") {
+					This.Prop.Item_Width := 2
+					This.Prop.Item_Height := 2
+				} Else If (This.Prop.ItemClass ~= "Warstaffs|Staffs|Two Hand|Bows") {
+					This.Prop.Item_Width := 2
+					This.Prop.Item_Height := 4
+				} Else If (This.Prop.ItemClass ~= "Daggers|Wands") {
+					This.Prop.Item_Width := 1
+					This.Prop.Item_Height := 3
 				}
 			}
 		}
@@ -1745,17 +1802,27 @@
 				If This.MatchNinjaDB("Resonator")
 					Return
 			}
+			Else If (This.Prop.IsOmen)
+			{
+				If This.MatchNinjaDB("Omen")
+					Return
+			}
+			Else If (This.Prop.IsTattoo)
+			{
+				If This.MatchNinjaDB("Tattoo")
+					Return
+			}
+			Else If (This.Prop.IsInvitation)
+			{
+				If This.MatchNinjaDB("Invitation")
+					Return
+			}
 			If This.MatchNinjaDB("Currency")
 				Return
 		}
 		If (This.Prop.RarityDivination)
 		{
 			If This.MatchNinjaDB("DivinationCard")
-				Return
-		}
-		If (This.Prop.Prophecy)
-		{
-			If This.MatchNinjaDB("Prophecy")
 				Return
 		}
 		If (This.Prop.TimelessSplinter || This.Prop.TimelessEmblem || This.Prop.BreachSplinter || This.Prop.Offering || This.Prop.Vessel || This.Prop.Scarab || This.Prop.SacrificeFragment || This.Prop.MortalFragment || This.Prop.GuardianFragment || This.Prop.ProphecyFragment || This.Prop.ConquererFragment || This.Prop.ItemName ~= "Simulacrum")
@@ -1820,7 +1887,40 @@
 		}
 		If (This.Prop.IsMap)
 		{
-			If This.MatchNinjaDB("Map","ItemBase","name")
+			keyToUse := This.Prop.IsBlightedMap ? "BlightedMap"
+				: This.Prop.IsBlightRavagedMap ? "BlightRavagedMap"
+				: "Map"
+			If This.MatchNinjaDB(keyToUse,"ItemBase","name")
+				Return
+		}
+		If (This.Prop.IsInvitation)
+		{
+			If This.MatchNinjaDB("Invitation")
+				Return
+		}
+		If (This.Prop.IsMemory)
+		{
+			If This.MatchNinjaDB("Memory")
+				Return
+		}
+		If (This.Prop.ClusterJewel)
+		{
+			For k, v in Ninja.ClusterJewel
+			{
+				If (This.Prop.ClusterKey = v["name"]
+					&& This.Prop.ClusterVariant = v["variant"]
+					&& This.Prop.ItemLevel >= v["levelRequired"])
+				{
+					This.Prop.ChaosValue := v["chaosValue"]
+					This.Prop.ExaltValue := v["exaltedValue"]
+					Break
+				}
+			}
+			Return
+		}
+		If (This.Prop.IsRune)
+		{
+			If This.MatchNinjaDB("KalguuranRune")
 				Return
 		}
 		If (This.Prop.ItemLevel >= 82 && This.Prop.Influence != "" && !This.Prop.RarityUnique)
@@ -1847,10 +1947,11 @@
 		{
 			If (This.Prop[MatchKey] = v[NinjaKey])
 			{
-				If ((ApiStr = "Map" || ApiStr = "UniqueMap")
+				If (ApiStr ~= "Map"
 					&& This.Prop.Map_Tier < v["mapTier"])
 					Continue
-				If (v["links"] && ApiStr ~= "Unique"
+				If (v["links"]
+					&& ApiStr ~= "Unique"
 					&& This.Prop.Sockets_Link < v["links"])
 					Continue
 				This.Prop.ChaosValue := This.GetValue("Prop","ChaosValue") + v["chaosValue"]
@@ -2441,10 +2542,8 @@
 	}
 	MatchStashManagement(passthrough:=False){
 		; Create associative array so HasKey function can be used
-		UnsupportedAffinityCurrencies := { "Stacked Deck":0
-			, "Prime Regrading Lens":0
+		UnsupportedAffinityCurrencies := { "Prime Regrading Lens":0
 			, "Secondary Regrading Lens":0
-			, "Veiled Chaos Orb":0
 			, "Vial of Transcendence":0
 			, "Vial of Sacrifice":0
 			, "Vial of the Ghost":0
@@ -2454,17 +2553,29 @@
 			, "Vial of Awakening":0
 			, "Vial of the Ritual":0
 			, "Vial of Fate":0
-			, "Bestiary Orb":0
-			, "Blessing of Chayula":0
-			, "Blessing of Xoph":0
-			, "Blessing of Uul-Netol":0
-			, "Blessing of Tul":0
-			, "Blessing of Esh":0 }
-		If (StashTabYesCurrency && This.Prop.RarityCurrency && (This.Prop.SpecialType="" || This.Prop.SpecialType = "Ritual Item")) {
-			If (StashTabYesCurrency > 1 && !UnsupportedAffinityCurrencies.HasKey(This.Prop.ItemName))
+			, "Bestiary Orb":0 }
+		If (This.Prop.IsRune && StashTabYesRunes){
+			sendstash := StashTabRunes
+		} Else If (This.Prop.IsTattoo && StashTabYesTattoos){
+			sendstash := StashTabTattoos
+		} Else If ( StashTabYesCurrency
+			&& This.Prop.RarityCurrency
+			&& ( This.Prop.SpecialType = ""
+				|| This.Prop.SpecialType = "Ritual Item"
+				|| (This.Prop.IsRune && !StashTabYesRunes)
+				|| (This.Prop.IsTattoo && !StashTabYesTattoos) ) )
+		{
+			If ( StashTabYesCurrency > 1
+				&& !This.Prop.IsRune
+				&& !This.Prop.IsTattoo
+				&& !UnsupportedAffinityCurrencies.HasKey( This.Prop.ItemName ) )
 				sendstash := -2
 			Else
 				sendstash := StashTabCurrency
+		} Else If (This.Prop.IsRune && StashTabYesRunes){
+			sendstash := StashTabRunes
+		} Else If (This.Prop.IsTattoo && StashTabYesTattoos){
+			sendstash := StashTabTattoos
 		} Else If (StashTabYesNinjaPrice && This.Prop.ChaosValue >= StashTabYesNinjaPrice_Price && !This.Prop.IsMap) {
 			sendstash := StashTabNinjaPrice
 		} Else If (This.Prop.Expedition) {

@@ -96,7 +96,6 @@ ItemCraftingBaseComparator(base1,base2){
 	base1 := RegExReplace(base1,"SCJ", "Small Cluster Jewel")
 	base1 := RegExReplace(base1,"MCJ", "Medium Cluster Jewel")
 	base1 := RegExReplace(base1,"LCJ", "Large Cluster Jewel")
-	base1 := RegExReplace(base1,"Awakened|Elevated", "Atlas Upgrade Items")
 	base1 := RegExReplace(base1,"([^s])$", "$1s")
 	result := base1 ~= base2
 	Log("Item Crafting Base Comparison ","Evaluating " base1 " and " base2 " returned " (result?"True":"False"))
@@ -190,7 +189,7 @@ CraftingMaps(){
 	ShooMouse(), GuiStatus(), ClearNotifications()
 	; Ignore Slot
 	BlackList := Array_DeepClone(BlackList_Default)
-	WR.data.Counts := CountCurrency(["Alchemy","Binding","Transmutation","Scouring","Vaal","Chisel","Chaos","Augmentation","Awakened","Elevated"])
+	WR.data.Counts := CountCurrency(["Alchemy","Binding","Transmutation","Scouring","Vaal","Chisel","Chaos","Augmentation"])
 	; MsgBoxVals(WR.data.Counts)
 	MapList := {}
 	; Start Scan on Inventory
@@ -214,9 +213,14 @@ CraftingMaps(){
 			; Identify Items routines
 			ClipItem(Grid.X,Grid.Y)
 			addToBlacklist(C, R)
+			mapCraftingMethod := getMapCraftingMethod()
 			If (Item.Affix["Unidentified"]&&YesIdentify)
 			{
-				If ( (Item.Prop.IsMap || Item.Prop.IsBlightedMap) && (!YesMapUnid || ( Item.Prop.RarityMagic && ( getMapCraftingMethod() ~= "(Alchemy|Hybrid|Binding|Chaos)" ))) && !Item.Prop.Corrupted)
+				If ( (Item.Prop.IsMap || Item.Prop.IsBlightedMap) 
+					&& (!YesMapUnid
+							|| ( Item.Prop.RarityMagic && mapCraftingMethod ~= "(Alchemy|Hybrid|Binding|Chaos)" )
+							|| ( Item.Affix.Unidentified && mapCraftingMethod ~= "Chisel" && Item.Prop.Map_Quality < 20 )	)
+					&& !Item.Prop.Corrupted)
 				{
 					WisdomScroll(Grid.X,Grid.Y)
 					ClipItem(Grid.X,Grid.Y)
@@ -230,47 +234,45 @@ CraftingMaps(){
 			;Crafting Map Script
 			If ((Item.Prop.IsMap || Item.Prop.IsBlightedMap) && !Item.Prop.Corrupted && !Item.Prop.RarityUnique)
 			{
-				If (Item.Prop.Map_Quality < 20)
-					If (ForceMaxChisel) {
-						numberChisel := Ceil((20 - Item.Prop.Map_Quality)/5)
-					} Else {
-						numberChisel := (20 - Item.Prop.Map_Quality)//5
-					}
-				Else
+				If (mapCraftingMethod ~= "Chisel") {
+					qualityPerChisel := Item.Prop.Map_Tier > 10 ? 5 
+					:	Item.Prop.Map_Tier > 5 ? 10 
+					:	Item.Prop.Map_Tier >= 1 ? 20 
+					: 1
 					numberChisel := 0
-				;Check all 3 ranges tier with same logic
-				i = 0
-				Loop, 3
+
+					If (Item.Prop.Map_Quality < 20) {
+						numberChisel := ForceMaxChisel ? Ceil((20 - Item.Prop.Map_Quality)/qualityPerChisel) : (20 - Item.Prop.Map_Quality)//qualityPerChisel
+					}
+				
+					If !ApplyCurrency("Chisel",Grid.X,Grid.Y,numberChisel)
+						Return False
+				}
+
+				If (!Item.Prop.RarityNormal)
 				{
-					i++
-					If (EndMapTier%i% >= StartMapTier%i% && CraftingMapMethod%i% != "Disable" && Item.Prop.Map_Tier >= StartMapTier%i% && Item.Prop.Map_Tier <= EndMapTier%i%)
+					If ( (Item.Prop.RarityMagic && mapCraftingMethod == "Transmutation+Augmentation") 
+						|| (Item.Prop.RarityRare && (mapCraftingMethod == "Transmutation+Augmentation" || mapCraftingMethod ~= "(^Alchemy$|^Binding$|^Hybrid$|^Chaos$)")) 
+						|| (Item.Prop.RarityRare && Item.Prop.Quality >= 16 && mapCraftingMethod ~= "(Alchemy|Binding|Hybrid|Chaos)") )
 					{
-						If (!Item.Prop.RarityNormal)
-						{
-							If ( (Item.Prop.RarityMagic && CraftingMapMethod%i% == "Transmutation+Augmentation") || (Item.Prop.RarityRare && (CraftingMapMethod%i% == "Transmutation+Augmentation" || CraftingMapMethod%i% ~= "(^Alchemy$|^Binding$|^Hybrid$|^Chaos$)")) || (Item.Prop.RarityRare && Item.Prop.Quality >= 16 && CraftingMapMethod%i% ~= "(Alchemy|Binding|Hybrid|Chaos)") )
-							{
-								MapRoll(CraftingMapMethod%i%, Grid.X,Grid.Y)
-								If (CraftingMapMethod%i% ~= "Vaal$")
-									ApplyCurrency("Vaal",Grid.X,Grid.Y)
-								Continue
-							}
-							Else
-							{
-								If !ApplyCurrency("Scouring",Grid.X,Grid.Y)
-									Return False
-							}
-						}
-						If (Item.Prop.RarityNormal)
-						{
-							If (CraftingMapMethod%i% ~= "^Chisel")
-								If !ApplyCurrency("Chisel",Grid.X,Grid.Y,numberChisel)
-									Return False
-							MapRoll(CraftingMapMethod%i%, Grid.X,Grid.Y)
-							If (CraftingMapMethod%i% ~= "Vaal$")
-								ApplyCurrency("Vaal",Grid.X,Grid.Y)
-						}
+						If (!Item.Prop.MapKeepFlag)
+							MapRoll(mapCraftingMethod, Grid.X,Grid.Y)
+						If (mapCraftingMethod ~= "Vaal$")
+							ApplyCurrency("Vaal",Grid.X,Grid.Y)
+					}
+					Else
+					{
+						If !ApplyCurrency("Scouring",Grid.X,Grid.Y)
+							Return False
 					}
 				}
+				If (Item.Prop.RarityNormal)
+				{
+					MapRoll(mapCraftingMethod, Grid.X,Grid.Y)
+					If (mapCraftingMethod ~= "Vaal$")
+						ApplyCurrency("Vaal",Grid.X,Grid.Y)
+				}
+
 			} Else If (indexOf(Item.Prop.ItemClass,["Blueprints","Contracts"]) && HeistAlcNGo) {
 				If (Item.Prop.RarityMagic)
 					ApplyCurrency("Scouring",Grid.X,Grid.Y)

@@ -59,6 +59,7 @@ ItemSortCommand(){
 	Sleep, 90*Latency
 	MouseMove, xx, yy, 0
 	CheckRunning("Off")
+	UpdateGuiChaosCounts()
 	Return
 }
 
@@ -103,13 +104,13 @@ ShooMouse()
 	Random, RX, (A_ScreenWidth*0.45), (A_ScreenWidth*0.55)
 	Random, RY, (A_ScreenHeight*0.45), (A_ScreenHeight*0.55)
 	MouseMove, RX, RY, 0
-	Sleep, 60*Latency
+	Sleep, 90*Latency
 }
 ; ClearNotifications - Get rid of overlay messages if any are present
 ClearNotifications()
 {
 	; Global InventoryGridY
-	If (xBtn := FindText(GameW - 21,InventoryGridY[1] - 60,GameW,InventoryGridY[5] + 10,0.2,0.2,XButtonStr,0))
+	If (xBtn := FindText(GameW - 30,InventoryGridY[1] - 90,GameW,InventoryGridY[5] + 30,0.2,0.2,XButtonStr,0))
 	{
 		Log("Verbose","Clearing Notifications #" xBtn.Count(), GameW, InventoryGridY[1], InventoryGridY[5])
 		For k, v in xBtn
@@ -122,12 +123,14 @@ ClearNotifications()
 CheckToIdentify(){
 	If (Item.Affix["Unidentified"] && YesIdentify)
 	{
-		If (Item.Prop.IsInfluenceItem && YesInfluencedUnid && Item.Prop.RarityRare)
+		If (Item.Prop.IsSynthesisItem && YesSynthesisId && Item.Prop.Rarity_Digit <= 3)
+			Return True
+		Else If (Item.Prop.IsInfluenceItem && YesInfluencedUnid && Item.Prop.RarityRare)
 			Return False
 		Else If (ChaosRecipeEnableFunction && ChaosRecipeEnableUnId && (Item.Prop.ChaosRecipe || Item.Prop.RegalRecipe)
 			&& Item.Prop.ItemLevel < ChaosRecipeLimitUnId && Item.StashChaosRecipe(false))
 			Return False
-		Else If (Item.Prop.IsMap && !YesMapUnid && !Item.Prop.Corrupted)
+		Else If (Item.Prop.IsMap && !YesMapUnid)
 			Return True
 		Else If (Item.Prop.Chromatic && (Item.Prop.RarityRare || Item.Prop.RarityUnique ) )
 			Return True
@@ -148,7 +151,9 @@ VendorRoutine()
 	SortGem := []
 	BlackList := Array_DeepClone(BlackList_Default)
 	; Move mouse out of the way to grab screenshot
-	ShooMouse(), GuiStatus(), ClearNotifications()
+	ShooMouse()
+	GuiStatus()
+	ClearNotifications()
 	If !OnVendor
 	{
 		Return
@@ -393,7 +398,9 @@ StashRoutine()
 	}
 	BlackList := Array_DeepClone(BlackList_Default)
 	; Move mouse away for Screenshot
-	ShooMouse(), FindText.ScreenShot(GameX,GameY,GameX+GameW,GameY+GameH) , ClearNotifications()
+	ShooMouse()
+	FindText.ScreenShot(GameX,GameY,GameX+GameW,GameY+GameH)
+	ClearNotifications()
 	; CraftingBasesRequest()
 	; Main loop through inventory
 	For C, GridX in InventoryGridX
@@ -458,7 +465,10 @@ StashRoutine()
 						If (Item.Prop.RarityUnique && !Item.Prop.HasKey("IsOrgan")) && ((StashTabYesUniqueRing && Item.Prop.Ring) || StashTabYesUniqueDump)
 						{
 							Sleep, 250*Latency
-							ShooMouse(), GuiStatus(), ClearNotifications(), Pitem := FindText.GetColor(GridX,GridY)
+							ShooMouse()
+							GuiStatus()
+							ClearNotifications()
+							Pitem := FindText.GetColor(GridX,GridY)
 							if (indexOfHex(Pitem, varEmptyInvSlotColor))
 								Continue
 							SortFirst[StashTabYesUniqueRing && Item.Prop.Ring?StashTabUniqueRing:StashTabUniqueDump].Push({"C":C,"R":R,"Item":Item})
@@ -497,7 +507,10 @@ StashRoutine()
 							If (StashTabYesUniqueDump)
 							{
 								Sleep, 200*Latency
-								ShooMouse(), GuiStatus(), ClearNotifications(), Pitem := FindText.GetColor(GridX,GridY)
+								ShooMouse()
+								GuiStatus()
+								ClearNotifications()
+								Pitem := FindText.GetColor(GridX,GridY)
 								if (indexOfHex(Pitem, varEmptyInvSlotColor))
 									Continue
 								MoveStash(StashTabUniqueDump)
@@ -689,7 +702,9 @@ DivRoutine()
 {
 	SetActionTimings()
 	BlackList := Array_DeepClone(BlackList_Default)
-	ShooMouse(), GuiStatus(), ClearNotifications()
+	ShooMouse()
+	GuiStatus()
+	ClearNotifications()
 	; Main loop through inventory
 	For C, GridX in InventoryGridX
 	{
@@ -733,7 +748,9 @@ IdentifyRoutine()
 {
 	SetActionTimings()
 	BlackList := Array_DeepClone(BlackList_Default)
-	ShooMouse(), GuiStatus(), ClearNotifications()
+	ShooMouse()
+	GuiStatus()
+	ClearNotifications()
 	; Main loop through inventory
 	For C, GridX in InventoryGridX
 	{

@@ -23,7 +23,7 @@ WR_Menu(Function:="",Var*){
 
       Gui, Inventory: Tab, Options
       Gui, Inventory: Font, Bold s9 cBlack, Arial
-      Gui, Inventory: Add, GroupBox, Section w170 h315 xm ym+25, Inventory Sort/CLF Options
+      Gui, Inventory: Add, GroupBox, Section w170 h330 xm ym+25, Inventory Sort/CLF Options
       Gui, Inventory: Font,
       Gui, Inventory: Add, Checkbox, gUpdateExtra vYesIdentify Checked%YesIdentify% xs+5 ys+18 , Identify Items?
       Gui, Inventory: Add, Checkbox, gUpdateExtra vYesStash Checked%YesStash% y+8 , Deposit at Stash?
@@ -32,6 +32,7 @@ WR_Menu(Function:="",Var*){
       Gui, Inventory: Add, Checkbox, gUpdateExtra vYesSortFirst Checked%YesSortFirst% y+8 , Group Items before stashing?
       Gui, Inventory: Add, Checkbox, gUpdateExtra vYesMapUnid Checked%YesMapUnid% y+8 , Leave Map Un-ID?
       Gui, Inventory: Add, Checkbox, gUpdateExtra vYesInfluencedUnid Checked%YesInfluencedUnid% y+8 , Leave Influenced Un-ID?
+      Gui, Inventory: Add, Checkbox, gUpdateExtra vYesSynthesisId Checked%YesSynthesisId% y+8 , Always ID Frac/Syth rares?
       Gui, Inventory: Add, Checkbox, gUpdateExtra vYesCLFIgnoreImplicit Checked%YesCLFIgnoreImplicit% y+8 , Ignore Implicit in CLF?
       Gui, Inventory: Add, Checkbox, gSaveGeneral vYesBatchVendorBauble Checked%YesBatchVendorBauble% y+8 , Batch Vendor Quality Flasks?
       Gui, Inventory: Add, Checkbox, gSaveGeneral vYesBatchVendorGCP Checked%YesBatchVendorGCP% y+8 , Batch Vendor Quality Gems?
@@ -134,7 +135,7 @@ WR_Menu(Function:="",Var*){
       Gui, Inventory: Add, UpDown,Range1-99 gSaveStashTabs vStashTabMiscMapItems x+0 yp hp , %StashTabMiscMapItems%
       Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashTabYesMiscMapItems Checked%StashTabYesMiscMapItems% x+5 yp+4, Enable
 
-      ; Second column Gui - GEMS
+      ; Second column Gui - Links/Bricked Maps/Influenced/Runes/Tattoos
 
       Gui, Inventory: Font, Bold s8 cBlack, Arial
       Gui, Inventory: Add, GroupBox, Section w110 h50 x+15 ys+18 , 5/6 linked
@@ -156,6 +157,20 @@ WR_Menu(Function:="",Var*){
       Gui, Inventory: Add, Edit, Number w40 xp+6 yp+17
       Gui, Inventory: Add, UpDown, Range1-99 x+0 yp hp gSaveStashTabs vStashTabInfluencedItem , %StashTabInfluencedItem%
       Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashTabYesInfluencedItem Checked%StashTabYesInfluencedItem% x+5 yp+4, Enable
+
+      Gui, Inventory: Font, Bold s8 cBlack, Arial
+      Gui, Inventory: Add, GroupBox, w110 h50 xs yp+20 , Runes
+      Gui, Inventory: Font,
+      Gui, Inventory: Add, Edit, Number w40 xp+6 yp+17
+      Gui, Inventory: Add, UpDown, Range1-99 x+0 yp hp gSaveStashTabs vStashTabRunes , %StashTabRunes%
+      Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashTabYesRunes Checked%StashTabYesRunes% x+5 yp+4, Enable
+
+      Gui, Inventory: Font, Bold s8 cBlack, Arial
+      Gui, Inventory: Add, GroupBox, w110 h50 xs yp+20 , Tattoos
+      Gui, Inventory: Font,
+      Gui, Inventory: Add, Edit, Number w40 xp+6 yp+17
+      Gui, Inventory: Add, UpDown, Range1-99 x+0 yp hp gSaveStashTabs vStashTabTattoos , %StashTabTattoos%
+      Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashTabYesTattoos Checked%StashTabYesTattoos% x+5 yp+4, Enable
 
       ; Third column Gui - Rare itens
 
