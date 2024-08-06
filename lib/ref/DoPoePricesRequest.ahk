@@ -10,7 +10,7 @@ TradeFunc_DoPoePricesRequest(RawItemData, ByRef retCurl) {
   payLength  := StrLen(postData)
   url     := "https://www.poeprices.info/api"
   
-  reqTimeout := 25
+  reqTimeout := 5
   options  := "RequestType: GET"
   ;options  .= "`n" "ReturnHeaders: skip"
   options  .= "`n" "ReturnHeaders: append"
@@ -22,13 +22,13 @@ TradeFunc_DoPoePricesRequest(RawItemData, ByRef retCurl) {
   reqHeaders.push("Origin: https://poeprices.info")
   reqHeaders.push("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
   
-  ; ShowToolTip("Getting price prediction... ")
+  ;ShowToolTip("Getting price prediction... ")
   retCurl := true
   response := Curl_Download(url, postData, reqHeaders, options, false, false, false, "", "", true, retCurl)
   
   ; debugout := RegExReplace("""" A_ScriptDir "\lib\" retCurl, "curl", "curl.exe""")
-  FileDelete, %A_ScriptDir%\temp\poeprices_request.txt
-  FileAppend, %retCurl%, %A_ScriptDir%\temp\poeprices_request.txt
+  ;FileDelete, %A_ScriptDir%\temp\poeprices_request.txt
+  ;FileAppend, %retCurl%, %A_ScriptDir%\temp\poeprices_request.txt
   
   
   ; If (TradeOpts.Debug) {
@@ -52,17 +52,17 @@ TradeFunc_DoPoePricesRequest(RawItemData, ByRef retCurl) {
     responseObj := {}
   }
 
-  If (1) {
-    arr := {}
-    arr.aReturn := responseObj
-    arr.RawItemData := RawItemData
-    arr.EncodedItemata := EncodedItemData
-    arr.League := selectedLeague
-    FileDelete, %A_ScriptDir%\temp\poeprices_return.json
-    FileAppend,% json_fromObj(arr), %A_ScriptDir%\temp\poeprices_return.json
+  ; If (1) {
+  ;   arr := {}
+  ;   arr.aReturn := responseObj
+  ;   arr.RawItemData := RawItemData
+  ;   arr.EncodedItemata := EncodedItemData
+  ;   arr.League := selectedLeague
+  ;   FileDelete, %A_ScriptDir%\temp\poeprices_return.json
+  ;   FileAppend,% json_fromObj(arr), %A_ScriptDir%\temp\poeprices_return.json
 
-    ; TradeFunc_LogPoePricesRequest(arr, request, "poe_prices_debug_log.txt")
-  }
+  ;   ; TradeFunc_LogPoePricesRequest(arr, request, "poe_prices_debug_log.txt")
+  ; }
 
   ; responseObj.added := {}
   ; responseObj.added.encodedData := EncodedItemData

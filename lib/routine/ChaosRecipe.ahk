@@ -616,7 +616,10 @@ VendorRoutineChaos(){
     ;Seems to be an empty slot, no need to clip item info
 				Continue
 			}
+      CurrentStashTabYesPredictive := StashTabYesPredictive
+      StashTabYesPredictive := False
 			ClipItem(Grid.X,Grid.Y)
+      StashTabYesPredictive := CurrentStashTabYesPredictive
 			addToBlacklist(C, R)
 			If (!Item.Prop.IsItem || Item.Prop.ItemName = "") {
 				ShooMouse()

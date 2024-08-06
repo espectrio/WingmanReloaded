@@ -57,6 +57,7 @@ UpdateExtra:
 	IniWrite, %LootVacuumTapZSec%, %A_ScriptDir%\save\Settings.ini, General, LootVacuumTapZSec
 	IniWrite, %YesVendor%, %A_ScriptDir%\save\Settings.ini, General, YesVendor
 	IniWrite, %YesStash%, %A_ScriptDir%\save\Settings.ini, General, YesStash
+	IniWrite, %YesPredictivePrice%, %A_ScriptDir%\save\Settings.ini, General, YesPredictivePrice
 	IniWrite, %YesSkipMaps%, %A_ScriptDir%\save\Settings.ini, General, YesSkipMaps
 	IniWrite, %YesSkipMaps_Prep%, %A_ScriptDir%\save\Settings.ini, General, YesSkipMaps_Prep
 	IniWrite, %YesSkipMaps_eval%, %A_ScriptDir%\save\Settings.ini, General, YesSkipMaps_eval

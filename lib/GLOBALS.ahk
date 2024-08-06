@@ -247,6 +247,7 @@ ft_ToolTip_Text_Part2=
 	StashTabYesNinjaPrice_Price = Assign the minimum value in chaos to send to Ninja Priced Tab
 	StashTabPredictive = Assign the Stash tab for Rare items priced with Machine Learning
 	StashTabYesPredictive = Enable to send Priced Rare items to the assigned tab on the left`rPredicted price value must be at or above threshold
+	StashTabYesPredictive_Price = Set the minimum value to consider worth stashing
 	StashTabClusterJewel = Assign the Stash tab for cluster jewels
 	StashTabYesClusterJewel = Enable to send Cluster Jewels to the assigned tab on the left
 	StashTabDump = Assign the Stash tab for Unsorted items left over during Stash routine
@@ -539,6 +540,8 @@ Global OnDelveChart := False
 Global RescaleRan := False
 Global ToggleExist := False
 Global YesOHB := True
+Global YesPredictivePrice := "Off"
+Global YesPredictivePrice_Percent_Val := 100
 Global HPerc := 100
 Global GameX, GameY, GameW, GameH, mouseX, mouseY
 Global OHB
@@ -675,6 +678,7 @@ Global StashTabYesDump := 1
 ;Priced Tabs Options
 Global StashTabPredictive := 1
 Global StashTabYesPredictive := 0
+Global StashTabYesPredictive_Price := 5
 Global StashTabNinjaPrice := 1
 Global StashTabYesNinjaPrice := 0
 Global StashTabYesNinjaPrice_Price := 5

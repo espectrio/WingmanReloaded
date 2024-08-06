@@ -101,12 +101,12 @@ ClipItem(x, y){
 	Item := ""
 	MouseMove, x, y
 	Sleep, 105+(ClipLatency*15)
-	Send ^!c
+	Send ^c
 	ClipWait, 0.1
 	If ErrorLevel
 	{
 		Sleep, 120+(ClipLatency*15)
-		Send ^!c
+		Send ^c
 		ClipWait, 0.1
 		If (ErrorLevel && ItemParseActive)
 			Clipboard := Backup

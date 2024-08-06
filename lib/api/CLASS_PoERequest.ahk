@@ -9,8 +9,10 @@ Class PoERequest {
     postdata.accountName := AccountNameSTR
     postdata.tabs := 0
     postdata.tabIndex := TabDigit - 1
+    ;Log(Headers)
+    ;Log(postdata)
     response := Util.HttpGet(Url,Headers,postdata)
-    ; Log("Stash API Reply ", "`n" response)
+    ;Log("Stash API Reply ", "`n" response)
     Return This.HandleResponse(response)
   }
   Account() {

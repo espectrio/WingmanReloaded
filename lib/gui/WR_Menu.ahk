@@ -67,6 +67,17 @@ WR_Menu(Function:="",Var*){
       Gui, Inventory: Add, DropDownList, vUpdateDatabaseInterval x+1 yp-4 w30 Choose%UpdateDatabaseInterval%, 1|2|3|4|5|6|7
       Gui, Inventory: Add, Checkbox, vForceMatch6Link xs+5 y+8 Checked%ForceMatch6Link%, Match with the 6 Link price
       Gui, Inventory: Add, Checkbox, vForceMatchGem20 xs+5 y+8 Checked%ForceMatchGem20%, Match with gems below 20
+      Gui, Inventory: Add, Text, xs+5 y+11 hwndPredictivePriceHWND, Price Rares?
+      Gui, Inventory: Add, DropDownList, gUpdateExtra vYesPredictivePrice x+2 yp-3 w45 h13 r5, Off|Low|Avg|High
+      GuiControl,Inventory: ChooseString, YesPredictivePrice, %YesPredictivePrice%
+
+      Gui, Inventory: Font, s18
+      Gui, Inventory: Add, Text, x+1 yp-3 cC39F22, `%
+      Gui, Inventory: Add, Text, vYesPredictivePrice_Percent_Val x+0 yp w40 cC39F22 center, %YesPredictivePrice_Percent_Val%
+      Gui, Inventory: Font,
+      ControlGetPos, PPx, PPy, , , , ahk_id %PredictivePriceHWND%
+      PPx:=Scale_PositionFromDPI(PPx), PPy:=Scale_PositionFromDPI(PPy)
+      Slider_PredictivePrice := new Progress_Slider("Inventory", "YesPredictivePrice_Percent" , (PPx-6) , (PPy-3) , 175 , 15 , 50 , 200 , YesPredictivePrice_Percent_Val , "Black" , "F1C15D" , 1 , "YesPredictivePrice_Percent_Val" , 0 , 0 , 1, "General")
 
       Gui, Inventory: Font, Bold s9 cBlack, Arial
       Gui, Inventory: Add, GroupBox, w180 h145 section xm+370 ys, Automation
@@ -163,6 +174,13 @@ WR_Menu(Function:="",Var*){
       Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashTabYesDump Checked%StashTabYesDump% x+5 yp+4, Enable
 
       Gui, Inventory: Font, Bold s8 cBlack, Arial
+      Gui, Inventory: Add, GroupBox, w110 h50 xs yp+20 , Priced Rares
+      Gui, Inventory: Font,
+      Gui, Inventory: Add, Edit, Number w40 xp+6 yp+17
+      Gui, Inventory: Add, UpDown, Range1-99 x+0 yp hp gSaveStashTabs vStashTabPredictive , %StashTabPredictive%
+      Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashTabYesPredictive Checked%StashTabYesPredictive% x+5 yp+4, Enable
+
+      Gui, Inventory: Font, Bold s8 cBlack, Arial
       Gui, Inventory: Add, GroupBox, w110 h50 xs yp+20 , Ninja Priced
       Gui, Inventory: Font,
       Gui, Inventory: Add, Edit, Number w40 xp+6 yp+17
@@ -174,6 +192,13 @@ WR_Menu(Function:="",Var*){
       Gui, Inventory: Font,
       Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashDumpInTrial Checked%StashDumpInTrial% xs+5 ys+18, Enable Dump in Trial
       Gui, Inventory: Add, Checkbox, gSaveStashTabs vStashDumpSkipJC Checked%StashDumpSkipJC% xs+5 y+5, Skip Jeweller/Chroma Items
+
+      Gui, Inventory: Font, Bold s9 cBlack, Arial
+      Gui, Inventory: Add, GroupBox, w185 h40 section xs y+10, Priced Rares Tab
+      Gui, Inventory: Font,
+      Gui, Inventory: Add, Text, center xs+5 ys+18, Minimum Value to Stash
+      Gui, Inventory: Add, Edit, x+5 yp-3 w40
+      Gui, Inventory: Add, UpDown, Range1-100 x+0 yp hp gSaveStashTabs vStashTabYesPredictive_Price , %StashTabYesPredictive_Price%
 
       Gui, Inventory: Font, Bold s9 cBlack, Arial
       Gui, Inventory: Add, GroupBox, w185 h65 section xs y+10, Ninja Priced Tab
